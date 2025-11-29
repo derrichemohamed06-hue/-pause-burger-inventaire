@@ -1,728 +1,435 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Inventaire Pause Burger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
     :root {
-      --bg: #111111;
-      --card: #1f1f1f;
+      --bg: #f6f6f6;
+      --card: #ffffff;
       --accent: #ff7a00;
-      --text: #ffffff;
-      --muted: #aaaaaa;
-      --danger: #e63946;
-      --border: #333333;
-      --success: #2ecc71;
-    }
-
-    * {
-      box-sizing: border-box;
+      --accent-dark: #e06600;
+      --text: #111;
+      --muted: #666;
+      --border: #ddd;
     }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
     }
 
     header {
-      padding: 10px 16px 12px;
+      position: sticky;
+      top: 0;
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #000;
-      border-bottom: 2px solid var(--accent);
+      background: #111;
+      padding: 10px 14px;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      z-index: 20;
     }
 
     header img {
-      height: 42px;
+      height: 45px;
       width: auto;
       border-radius: 6px;
     }
 
-    header .title-block {
+    .title-block {
       display: flex;
       flex-direction: column;
     }
 
-    header .title {
+    .title {
       font-size: 18px;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: .05em;
       text-transform: uppercase;
-      color: var(--accent);
     }
 
-    header .subtitle {
-      font-size: 11px;
-      color: var(--muted);
+    .subtitle {
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    main {
+      padding: 12px;
+      padding-bottom: 100px;
+      max-width: 900px;
+      margin: 0 auto;
     }
 
     .toolbar {
-      padding: 8px 12px;
-      background: #181818;
-      border-bottom: 1px solid var(--border);
       display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    .toolbar-left,
-    .toolbar-right {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .tag {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--muted);
     }
 
     .btn {
       border: none;
       border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 12px;
-      background: #222;
-      color: var(--text);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #000;
-      font-weight: 600;
-    }
-
-    .btn-outline {
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-    }
-
-    .btn-danger {
-      background: transparent;
-      border: 1px solid var(--danger);
-      color: var(--danger);
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    main {
-      padding: 12px;
-      max-width: 980px;
-      margin: 0 auto 40px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      padding: 12px;
-      margin-bottom: 16px;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 6px;
-    }
-
-    .card-title {
+      padding: 8px 14px;
       font-size: 14px;
       font-weight: 600;
+      background: var(--accent);
+      color: white;
     }
 
-    .card-subtitle {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .summary-list {
-      list-style: none;
-      padding: 0;
-      margin: 6px 0 0;
-      font-size: 12px;
-    }
-
-    .summary-list li {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px dashed #333;
-      padding: 2px 0;
-    }
-
-    .summary-empty {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .categories {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .btn-secondary {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
     }
 
     .category {
-      background: #161616;
-      border-radius: 12px;
-      border: 1px solid #242424;
-      padding: 10px;
-    }
-
-    .category-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 18px;
     }
 
     .category-title {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .category-count {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-
-    th,
-    td {
-      padding: 4px 3px;
-      text-align: left;
-    }
-
-    th {
-      font-size: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      border-bottom: 1px solid #333;
+      letter-spacing: .04em;
     }
 
-    td.name {
-      width: 45%;
-      word-wrap: break-word;
+    .item {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 6px;
     }
 
-    td.qty,
-    td.chk {
-      text-align: center;
-      width: 18%;
-    }
-
-    input[type="number"] {
-      width: 60px;
-      padding: 2px 4px;
-      background: #111;
-      border-radius: 6px;
-      border: 1px solid #444;
-      color: var(--text);
-      font-size: 11px;
-      text-align: center;
-    }
-
-    input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--accent);
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid #333;
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .summary-actions {
+    .item-row {
       display: flex;
+      justify-content: space-between;
+      align-items: center;
       gap: 8px;
-      margin-top: 8px;
       flex-wrap: wrap;
     }
 
-    textarea#exportText {
-      width: 100%;
-      min-height: 80px;
-      margin-top: 8px;
-      padding: 6px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #000;
-      color: var(--text);
-      font-size: 11px;
-      resize: vertical;
+    .item-name {
+      font-size: 15px;
+      font-weight: 600;
+      flex: 1;
     }
 
-    @media (min-width: 720px) {
-      .toolbar {
-        padding-inline: 16px;
-      }
-      main {
-        padding-inline: 16px;
-      }
+    input[type=number] {
+      width: 70px;
+      padding: 6px;
+      font-size: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      text-align: center;
     }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+      font-size: 12px;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 12px;
+      background: #111;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer .count {
+      font-size: 14px;
+    }
+
+    .btn-white {
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid white;
+      background: transparent;
+      color: white;
+      font-size: 12px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 12px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    .modal-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #ddd;
+      padding: 4px 0;
+    }
+
   </style>
 </head>
 
 <body>
 <header>
-  <!-- Logo en haut à gauche -->
-  <img src="IMG_0100.jpeg" alt="Pause Burger Logo" />
+  <img src="IMG_0100.jpeg" alt="Logo">
   <div class="title-block">
-    <span class="title">Pause Burger – Inventaire</span>
-    <span class="subtitle">Fiche d’inventaire avec quantités & commandes</span>
+    <div class="title">Pause Burger</div>
+    <div class="subtitle">Inventaire</div>
   </div>
 </header>
 
-<div class="toolbar">
-  <div class="toolbar-left">
-    <span class="tag">📅 Inventaire du soir</span>
-    <span class="tag" id="summaryTag">À commander : 0</span>
+<main>
+  <div class="toolbar">
+    <button class="btn" id="showList">Voir à commander</button>
+    <button class="btn btn-secondary" id="resetBtn">Réinitialiser</button>
   </div>
-  <div class="toolbar-right">
-    <button class="btn btn-outline" id="resetBtn">Réinitialiser</button>
-    <button class="btn btn-primary" id="showToOrderBtn">Voir à commander</button>
+
+  <div id="categories"></div>
+</main>
+
+<div class="footer">
+  <div class="count"><span id="count">0</span> articles</div>
+  <button class="btn-white" id="shareBtn">Partager</button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <b>Liste à commander</b>
+      <button class="btn btn-secondary" id="closeModal">Fermer</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
   </div>
 </div>
 
-<main>
-  <!-- Résumé des produits à commander -->
-  <section class="card" id="summaryCard">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Liste pour le chef</div>
-        <div class="card-subtitle">
-          Tout ce qui est coché « À commander » apparaît ici.
-        </div>
-      </div>
-      <span class="pill">
-        <span class="pill-dot"></span>
-        <span id="summaryCountLabel">0 produit</span>
-      </span>
-    </div>
-    <ul class="summary-list" id="summaryList"></ul>
-    <p class="summary-empty" id="summaryEmpty">
-      Rien à commander pour l’instant. Coche « À commander » sur les produits
-      qui manquent et mets la quantité à ramener.
-    </p>
-
-    <div class="summary-actions">
-      <button class="btn btn-outline" id="copyListBtn">Copier la liste</button>
-      <button class="btn btn-outline" id="clearToOrderBtn">
-        Vider la liste
-      </button>
-    </div>
-    <textarea id="exportText" placeholder="La liste texte apparaîtra ici pour coller dans WhatsApp / SMS / etc."></textarea>
-  </section>
-
-  <!-- Catégories + produits -->
-  <section class="categories" id="categories"></section>
-</main>
-
 <script>
-  /********************
-   *  Données produits
-   ********************/
-  const DATA = [
-    {
-      id: "frais",
-      label: "Frais (garnitures)",
-      items: [
-        { id: "frites", name: "Frites" }, // en premier
-        { id: "salade", name: "Salade" },
-        { id: "tomate", name: "Tomate" },
-        { id: "oignon", name: "Oignon" },
-        { id: "cornichon", name: "Cornichon" }
-      ]
-    },
-    {
-      id: "viandes",
-      label: "Viandes & produits chauds",
-      items: [
-        { id: "steak90", name: "Steak 90g" },
-        { id: "steak45", name: "Steak 45g" },
-        { id: "cb", name: "Cordon bleu" },
-        { id: "kebab", name: "Kebab" },
-        { id: "nuggets", name: "Nuggets" },
-        { id: "fricadelle", name: "Fricadelle" },
-        { id: "merguez", name: "Merguez" },
-        { id: "chorizo", name: "Chorizo" },
-        { id: "poulet", name: "Poulet" },
-        { id: "fish", name: "Fish" },
-        { id: "rosti", name: "Rösti" }
-      ]
-    },
-    {
-      id: "sauces_g1",
-      label: "Sauces – Groupe 1 (principales)",
-      items: [
-        { id: "biggy", name: "Biggy" },
-        { id: "giant", name: "Giant" },
-        { id: "mayo", name: "Mayo" },
-        { id: "ketchup", name: "Ketchup" },
-        { id: "hannibal", name: "Hannibal" },
-        { id: "algerienne", name: "Algérienne" },
-        { id: "samourai", name: "Samouraï" },
-        { id: "bbq", name: "Barbecue" }
-      ]
-    },
-    {
-      id: "sauces_g2",
-      label: "Sauces – Groupe 2 (compléments)",
-      items: [
-        { id: "pita", name: "Pita" },
-        { id: "oignon_p", name: "Oignons poêlés / sauce" },
-        { id: "poivron", name: "Poivrons" },
-        { id: "andalouse", name: "Andalouse" },
-        { id: "brazil", name: "Brazil" }
-      ]
-    },
-    {
-      id: "sauces_autres",
-      label: "Sauces – Autres",
-      items: [
-        { id: "tasty", name: "Tasty" },
-        { id: "smoky", name: "Smoky" },
-        { id: "curry", name: "Curry" },
-        { id: "fish_sauce", name: "Sauce Fish" },
-        { id: "cheezy", name: "Cheezy" },
-        { id: "americaine", name: "Sauce Américaine" }, // marocaine remplacée
-        { id: "fromagere", name: "Sauce fromagère" }
-      ]
-    },
-    {
-      id: "epices",
-      label: "Épices & assaisonnements",
-      items: [
-        { id: "vinaigre", name: "Vinaigre" },
-        { id: "epices", name: "Épices" },
-        { id: "epices_tenders", name: "Tender épices" },
-        { id: "epices_jaune", name: "Épices jaune" },
-        { id: "sel", name: "Sel" },
-        { id: "poivre", name: "Poivre" }
-      ]
-    },
-    {
-      id: "tenders",
-      label: "Tenders & ailes",
-      items: [
-        { id: "boite_tenders_3", name: "Boîte Tenders ×3" },
-        { id: "boite_tenders_6", name: "Boîte Tenders ×6" },
-        { id: "boite_tenders_14", name: "Boîte Tenders ×14" }, // 12 remplacé par 14
-        { id: "boite_tenders_20", name: "Boîte Tenders ×20" },
-        { id: "wings", name: "Wings" },
-        { id: "wings_spicy", name: "Wings épicé" }
-      ]
-    },
-    {
-      id: "frites_consommables",
-      label: "Consommables frites",
-      items: [
-        { id: "sac_frites_petit", name: "Sacs de frites petits" },
-        { id: "sac_frites_grand", name: "Sacs de frites grands" }
-      ]
-    },
-    {
-      id: "emballages",
-      label: "Emballages",
-      items: [
-        { id: "emb_tacos", name: "Emballage tacos" },
-        { id: "emb_gd_burger", name: "Emballage grand burger" },
-        { id: "emb_burger", name: "Emballage burger" },
-        { id: "emb_wrap", name: "Emballage wrap" }
-      ]
-    },
-    {
-      id: "pains",
-      label: "Pains",
-      items: [
-        { id: "pain_sesame", name: "Pain sésame" },
-        { id: "pain_brioche", name: "Pain brioché" },
-        { id: "pain_toast", name: "Pain toast" },
-        { id: "pain_noir", name: "Pain noir" },
-        { id: "pain_rouge", name: "Pain rouge" },
-        { id: "pain_peluche", name: "Pain peluche" }
-      ]
-    },
-    {
-      id: "divers",
-      label: "Divers & hygiène",
-      items: [
-        { id: "farine", name: "Farine" },
-        { id: "sac_decong", name: "Sacs de décongélation" },
-        { id: "papier_cuisson", name: "Papier cuisson" },
-        { id: "alu", name: "Papier aluminium" }
-      ]
-    }
-  ];
+const DATA = {
+  "Frites": ["Frites"],
 
-  /********************
-   *  Gestion état
-   ********************/
-  const STORAGE_KEY = "pauseburger_inventaire_v2";
+  "Crudités": [
+    "Salade", "Tomates", "Oignons", "Cornichons"
+  ],
 
-  function defaultState() {
-    const state = {};
-    DATA.forEach(cat => {
-      cat.items.forEach(item => {
-        state[item.id] = {
-          qty: "",
-          done: false,
-          toOrder: false
-        };
-      });
-    });
-    return state;
-  }
+  "Produits frais / congélation (viandes)": [
+    "Steak 90g","Steak 45g","Cordons-bleus","Nuggets",
+    "Kebab","Fricadelles","Mexicano","Merguez",
+    "Chorizo","Lardons","Wings","Wings épicé"
+  ],
 
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return defaultState();
-      const parsed = JSON.parse(raw);
-      return { ...defaultState(), ...parsed };
-    } catch (e) {
-      console.error(e);
-      return defaultState();
-    }
-  }
+  "Épices": [
+    "Épices tenders","Épices jaune","Farine"
+  ],
 
-  let state = loadState();
+  "Pains": [
+    "Pain sésame","Pain brioché","Petit pain","Pain toast",
+    "Pain rouge","Pain noir","Pain peluche"
+  ],
 
-  function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    refreshSummary();
-  }
+  "Galettes": [
+    "Galette tacos grande","Galette tacos petite"
+  ],
 
-  /********************
-   *  Rendu DOM
-   ********************/
-  const categoriesEl = document.getElementById("categories");
-  const summaryListEl = document.getElementById("summaryList");
-  const summaryEmptyEl = document.getElementById("summaryEmpty");
-  const summaryTagEl = document.getElementById("summaryTag");
-  const summaryCountLabelEl = document.getElementById("summaryCountLabel");
-  const exportTextEl = document.getElementById("exportText");
+  "Sauces": [
+    "Mayo","Biggy","Giant","Ketchup","Hannibal",
+    "Algérienne","Samouraï","Barbecue","Sauce américaine",
+    "Sauce pita","Sauce oignons","Sauce poivrons",
+    "Andalouse","Brazil"
+  ],
 
-  function render() {
-    categoriesEl.innerHTML = "";
-    DATA.forEach(cat => {
-      const catDiv = document.createElement("section");
-      catDiv.className = "category";
+  "Huile": ["Huile"],
 
-      const header = document.createElement("div");
-      header.className = "category-header";
+  "Emballages & boîtes": [
+    "Emballage grand burger","Emballage petit burger",
+    "Emballage tacos","Emballage wrap",
+    "Sac frites grands","Sac frites petits",
+    "Boîte tenders x3","Boîte tenders x7",
+    "Boîte tenders x14","Boîte tenders x20"
+  ],
 
-      const title = document.createElement("span");
-      title.className = "category-title";
-      title.textContent = cat.label;
+  "Produits ménagers": [
+    "Liquide vaisselle","Sac-poubelle","Eau de javel",
+    "Dégraissant","Nettoyant sol","Éponge",
+    "Lave inox","Serpillière"
+  ]
+};
 
-      const count = document.createElement("span");
-      count.className = "category-count";
-      count.textContent = `${cat.items.length} produits`;
+function slug(s){
+  return s.toLowerCase().normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"")
+  .replace(/[^a-z0-9]+/g,"-");
+}
 
-      header.appendChild(title);
-      header.appendChild(count);
-      catDiv.appendChild(header);
+const KEY="pb_inventory_v2";
+let state = JSON.parse(localStorage.getItem(KEY) || "{}");
 
-      const table = document.createElement("table");
-      const thead = document.createElement("thead");
-      thead.innerHTML = `
-        <tr>
-          <th>Produit</th>
-          <th class="qty">Qté</th>
-          <th class="chk">Vu</th>
-          <th class="chk">À commander</th>
-        </tr>
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+
+function render(){
+  const container=document.getElementById("categories");
+  container.innerHTML="";
+  Object.entries(DATA).forEach(([cat, items])=>{
+    const catDiv=document.createElement("div");
+    catDiv.className="category";
+    catDiv.innerHTML=`<div class="category-title">${cat}</div>`;
+
+    items.forEach(name=>{
+      const id=slug(cat+"-"+name);
+      if(!state[id]) state[id]={qty:"",checked:false,order:false};
+
+      const item=document.createElement("div");
+      item.className="item";
+
+      item.innerHTML=`
+        <div class="item-row">
+          <div class="item-name">${name}</div>
+          <input type="number" class="qty" id="q-${id}" placeholder="Qté" value="${state[id].qty}">
+        </div>
+        <div class="item-row">
+          <label class="chip">
+            <input type="checkbox" id="c-${id}" ${state[id].checked?"checked":""}> Vu
+          </label>
+          <label class="chip">
+            <input type="checkbox" id="o-${id}" ${state[id].order?"checked":""}> À commander
+          </label>
+        </div>
       `;
-      table.appendChild(thead);
 
-      const tbody = document.createElement("tbody");
-
-      cat.items.forEach(item => {
-        const row = document.createElement("tr");
-        const itemState = state[item.id];
-
-        const tdName = document.createElement("td");
-        tdName.className = "name";
-        tdName.textContent = item.name;
-
-        const tdQty = document.createElement("td");
-        tdQty.className = "qty";
-        const inputQty = document.createElement("input");
-        inputQty.type = "number";
-        inputQty.min = "0";
-        inputQty.placeholder = "-";
-        inputQty.value = itemState.qty;
-        inputQty.addEventListener("input", e => {
-          state[item.id].qty = e.target.value;
-          saveState();
-        });
-        tdQty.appendChild(inputQty);
-
-        const tdDone = document.createElement("td");
-        tdDone.className = "chk";
-        const chkDone = document.createElement("input");
-        chkDone.type = "checkbox";
-        chkDone.checked = itemState.done;
-        chkDone.addEventListener("change", e => {
-          state[item.id].done = e.target.checked;
-          saveState();
-        });
-        tdDone.appendChild(chkDone);
-
-        const tdToOrder = document.createElement("td");
-        tdToOrder.className = "chk";
-        const chkToOrder = document.createElement("input");
-        chkToOrder.type = "checkbox";
-        chkToOrder.checked = itemState.toOrder;
-        chkToOrder.addEventListener("change", e => {
-          state[item.id].toOrder = e.target.checked;
-          saveState();
-        });
-        tdToOrder.appendChild(chkToOrder);
-
-        row.appendChild(tdName);
-        row.appendChild(tdQty);
-        row.appendChild(tdDone);
-        row.appendChild(tdToOrder);
-
-        tbody.appendChild(row);
+      // events
+      item.querySelector(`#q-${id}`).addEventListener("input", e=>{
+        state[id].qty=e.target.value;
+        save();
+        updateCount();
       });
 
-      table.appendChild(tbody);
-      catDiv.appendChild(table);
-      categoriesEl.appendChild(catDiv);
-    });
-
-    refreshSummary();
-  }
-
-  /********************
-   *  Résumé
-   ********************/
-  function refreshSummary() {
-    const itemsToOrder = [];
-    DATA.forEach(cat => {
-      cat.items.forEach(item => {
-        const s = state[item.id];
-        if (s.toOrder) {
-          itemsToOrder.push({
-            name: item.name,
-            qty: s.qty || "0"
-          });
-        }
+      item.querySelector(`#c-${id}`).addEventListener("change", e=>{
+        state[id].checked=e.target.checked;
+        save();
       });
+
+      item.querySelector(`#o-${id}`).addEventListener("change", e=>{
+        state[id].order=e.target.checked;
+        save();
+        updateCount();
+      });
+
+      catDiv.appendChild(item);
     });
 
-    summaryListEl.innerHTML = "";
-    if (itemsToOrder.length === 0) {
-      summaryEmptyEl.style.display = "block";
-      summaryCountLabelEl.textContent = "0 produit";
-      summaryTagEl.textContent = "À commander : 0";
-      exportTextEl.value = "";
-      return;
-    }
+    container.appendChild(catDiv);
+  });
 
-    summaryEmptyEl.style.display = "none";
-    itemsToOrder.forEach(it => {
-      const li = document.createElement("li");
-      const left = document.createElement("span");
-      left.textContent = it.name;
-      const right = document.createElement("span");
-      right.textContent = `× ${it.qty}`;
-      li.appendChild(left);
-      li.appendChild(right);
-      summaryListEl.appendChild(li);
+  updateCount();
+}
+
+function updateCount(){
+  const count=Object.values(state).filter(i=>i.order).length;
+  document.getElementById("count").textContent=count;
+}
+
+document.getElementById("resetBtn").onclick=()=>{
+  if(confirm("Réinitialiser tout ?")){
+    state={};
+    save();
+    render();
+  }
+};
+
+document.getElementById("showList").onclick=()=>{
+  const modal=document.getElementById("modal");
+  const body=document.getElementById("modalBody");
+  const items=Object.entries(state).filter(([id,v])=>v.order);
+
+  if(items.length===0){
+    body.innerHTML="Aucun article à commander.";
+  } else {
+    body.innerHTML="";
+    items.forEach(([id, v])=>{
+      const row=document.createElement("div");
+      row.className="modal-item";
+      row.innerHTML=`
+        <span>${v.name}</span>
+        <span><b>x ${v.qty || 1}</b></span>
+      `;
+      body.appendChild(row);
     });
-
-    summaryCountLabelEl.textContent =
-      itemsToOrder.length + (itemsToOrder.length > 1 ? " produits" : " produit");
-    summaryTagEl.textContent = `À commander : ${itemsToOrder.length}`;
-
-    const lines = itemsToOrder.map(it => `- ${it.name} : ${it.qty}`);
-    exportTextEl.value =
-      "Liste Pause Burger – commande :\n\n" + lines.join("\n");
   }
 
-  /********************
-   *  Actions toolbar
-   ********************/
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    if (!confirm("Réinitialiser tout l’inventaire ?")) return;
-    state = defaultState();
-    saveState();
-    render();
+  modal.classList.add("open");
+};
+
+document.getElementById("closeModal").onclick=()=>{
+  document.getElementById("modal").classList.remove("open");
+};
+
+document.getElementById("shareBtn").onclick=async()=>{
+  const items=Object.values(state).filter(i=>i.order);
+  let text="Liste à commander :\n\n";
+  items.forEach(i=>{
+    text+=`- ${i.name} x ${i.qty||1}\n`;
   });
 
-  document.getElementById("clearToOrderBtn").addEventListener("click", () => {
-    if (!confirm("Vider uniquement la liste à commander ?")) return;
-    Object.keys(state).forEach(key => {
-      state[key].toOrder = false;
-    });
-    saveState();
-    render();
-  });
+  if(navigator.share){
+    await navigator.share({text});
+  } else {
+    await navigator.clipboard.writeText(text);
+    alert("Liste copiée !");
+  }
+};
 
-  document
-    .getElementById("showToOrderBtn")
-    .addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-  document.getElementById("copyListBtn").addEventListener("click", async () => {
-    const text = exportTextEl.value.trim();
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      alert("Liste copiée dans le presse-papier ✅");
-    } catch (e) {
-      alert(
-        "Impossible de copier automatiquement. Tu peux copier le texte manuellement."
-      );
-    }
-  });
-
-  // Premier rendu
-  render();
+render();
 </script>
 </body>
 </html>
