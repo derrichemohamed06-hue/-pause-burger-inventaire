@@ -13,7 +13,11 @@
       --accent-dark: #e06600;
       --text: #111;
       --muted: #666;
-      --border: #ddd;
+      --border: #dddddd;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -40,11 +44,13 @@
       height: 45px;
       width: auto;
       border-radius: 6px;
+      object-fit: contain;
     }
 
     .title-block {
       display: flex;
       flex-direction: column;
+      gap: 2px;
     }
 
     .title {
@@ -56,7 +62,7 @@
 
     .subtitle {
       font-size: 12px;
-      color: #ccc;
+      color: #cccccc;
     }
 
     main {
@@ -84,7 +90,7 @@
     }
 
     .btn-secondary {
-      background: white;
+      background: #ffffff;
       border: 1px solid var(--border);
       color: var(--text);
     }
@@ -164,6 +170,11 @@
       font-size: 14px;
     }
 
+    .footer .hint {
+      font-size: 11px;
+      color: #cccccc;
+    }
+
     .btn-white {
       border-radius: 999px;
       padding: 8px 12px;
@@ -192,7 +203,7 @@
       background: white;
       border-radius: 10px;
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       max-height: 80vh;
       overflow: hidden;
       display: flex;
@@ -204,30 +215,38 @@
       border-bottom: 1px solid #ddd;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
 
     .modal-body {
       padding: 12px;
       overflow-y: auto;
       font-size: 14px;
+      white-space: pre-wrap;
     }
 
-    .modal-item {
+    .modal-footer {
+      padding: 8px 12px 10px;
+      border-top: 1px solid #ddd;
       display: flex;
-      justify-content: space-between;
-      border-bottom: 1px dashed #ddd;
-      padding: 4px 0;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
+    .modal-footer .btn {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
   </style>
 </head>
 
 <body>
 <header>
-  <img src="IMG_0100.jpeg" alt="Logo">
+  <!-- le logo doit s'appeler IMG_0100.jpeg dans le dépôt -->
+  <img src="IMG_0100.jpeg" alt="Logo Pause Burger">
   <div class="title-block">
     <div class="title">Pause Burger</div>
-    <div class="subtitle">Inventaire</div>
+    <div class="subtitle">Inventaire · Soir</div>
   </div>
 </header>
 
@@ -241,7 +260,10 @@
 </main>
 
 <div class="footer">
-  <div class="count"><span id="count">0</span> articles</div>
+  <div>
+    <div class="count"><span id="count">0</span> articles à commander</div>
+    <div class="hint">Coche “À commander” et mets la quantité.</div>
+  </div>
   <button class="btn-white" id="shareBtn">Partager</button>
 </div>
 
@@ -252,184 +274,377 @@
       <button class="btn btn-secondary" id="closeModal">Fermer</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="copyBtn">Copier</button>
+    </div>
   </div>
 </div>
 
 <script>
-const DATA = {
-  "Frites": ["Frites"],
+  // --- Données inventaire (liste finale validée) ---
 
-  "Crudités": [
-    "Salade", "Tomates", "Oignons", "Cornichons"
-  ],
+  const DATA = {
+    "Frites": [
+      "Frites"
+    ],
 
-  "Produits frais / congélation (viandes)": [
-    "Steak 90g","Steak 45g","Cordons-bleus","Nuggets",
-    "Kebab","Fricadelles","Mexicano","Merguez",
-    "Chorizo","Lardons","Wings","Wings épicé"
-  ],
+    "Crudités": [
+      "Salade",
+      "Tomate",
+      "Oignon",
+      "Cornichon"
+    ],
 
-  "Épices": [
-    "Épices tenders","Épices jaune","Farine"
-  ],
+    "Viandes": [
+      "Steak 90g",
+      "Steak 45g",
+      "CB",
+      "Kebab",
+      "Nuggets",
+      "Fricadelle",
+      "Mexicain",
+      "Poulet",
+      "Fish",
+      "Merguez",
+      "Chorizo",
+      "Lardons",
+      "Rösti",
+      "Wings",
+      "Wings épicé"
+    ],
 
-  "Pains": [
-    "Pain sésame","Pain brioché","Petit pain","Pain toast",
-    "Pain rouge","Pain noir","Pain peluche"
-  ],
+    "Fromages / Suppléments": [
+      "Cheddar",
+      "Raclette",
+      "Chèvre",
+      "Oignons frits",
+      "Mozzarella",
+      "Boursin",
+      "Bacon",
+      "Œuf",
+      "Miel"
+    ],
 
-  "Galettes": [
-    "Galette tacos grande","Galette tacos petite"
-  ],
+    "Sauce cheddar / fromagère": [
+      "Sauce cheddar",
+      "Sauce fromagère"
+    ],
 
-  "Sauces": [
-    "Mayo","Biggy","Giant","Ketchup","Hannibal",
-    "Algérienne","Samouraï","Barbecue","Sauce américaine",
-    "Sauce pita","Sauce oignons","Sauce poivrons",
-    "Andalouse","Brazil"
-  ],
+    "Sauces (groupe 1)": [
+      "Mayonnaise",
+      "Biggy",
+      "Giant",
+      "Algérienne",
+      "Ketchup",
+      "Samouraï",
+      "Barbecue"
+    ],
 
-  "Huile": ["Huile"],
+    "Sauces (groupe 2 / autres)": [
+      "Andalouse",
+      "Poivre",
+      "Pita",
+      "Oignons poivrons",
+      "Américain",
+      "Tasty",
+      "Smoky",
+      "Curry",
+      "Fish",
+      "Cheezy",
+      "Brazil",
+      "Chili Thaï",
+      "Mammouth",
+      "Harissa"
+    ],
 
-  "Emballages & boîtes": [
-    "Emballage grand burger","Emballage petit burger",
-    "Emballage tacos","Emballage wrap",
-    "Sac frites grands","Sac frites petits",
-    "Boîte tenders x3","Boîte tenders x7",
-    "Boîte tenders x14","Boîte tenders x20"
-  ],
+    "Galettes": [
+      "Galette tacos grande",
+      "Galette tacos petite"
+    ],
 
-  "Produits ménagers": [
-    "Liquide vaisselle","Sac-poubelle","Eau de javel",
-    "Dégraissant","Nettoyant sol","Éponge",
-    "Lave inox","Serpillière"
-  ]
-};
+    "Emballages": [
+      "Emballage wrap",
+      "Emballage tacos",
+      "Emballage grand burger",
+      "Emballage petit burger",
+      "Boîte tenders x3",
+      "Boîte tenders x7",
+      "Boîte tenders x14",
+      "Boîte tenders x20"
+    ],
 
-function slug(s){
-  return s.toLowerCase().normalize("NFD")
-  .replace(/[\u0300-\u036f]/g,"")
-  .replace(/[^a-z0-9]+/g,"-");
-}
+    "Pains": [
+      "Pain sésame",
+      "Pain brioché",
+      "Pain toast",
+      "Petit pain",
+      "Pain noir",
+      "Pain peluche",
+      "Pain rouge"
+    ],
 
-const KEY="pb_inventory_v2";
-let state = JSON.parse(localStorage.getItem(KEY) || "{}");
+    "Épices": [
+      "Farine",
+      "Épices tenders",
+      "Épice jaune",
+      "Sel",
+      "Poivre"
+    ],
 
-function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+    "Papier / Consommable": [
+      "Papier cuisson",
+      "Aluminium",
+      "Sac de congélation"
+    ],
 
-function render(){
-  const container=document.getElementById("categories");
-  container.innerHTML="";
-  Object.entries(DATA).forEach(([cat, items])=>{
-    const catDiv=document.createElement("div");
-    catDiv.className="category";
-    catDiv.innerHTML=`<div class="category-title">${cat}</div>`;
+    "Huile": [
+      "Huile"
+    ],
 
-    items.forEach(name=>{
-      const id=slug(cat+"-"+name);
-      if(!state[id]) state[id]={qty:"",checked:false,order:false};
+    "Vinaigre": [
+      "Vinaigre"
+    ],
 
-      const item=document.createElement("div");
-      item.className="item";
+    "Produits ménagers": [
+      "Essuie-tout",
+      "Lave-sol",
+      "Eau javel",
+      "Dégraissant",
+      "Serpillière",
+      "Éponge inox",
+      "Gants",
+      "Sac poubelle",
+      "Lave mains"
+    ]
+  };
 
-      item.innerHTML=`
-        <div class="item-row">
-          <div class="item-name">${name}</div>
-          <input type="number" class="qty" id="q-${id}" placeholder="Qté" value="${state[id].qty}">
-        </div>
-        <div class="item-row">
-          <label class="chip">
-            <input type="checkbox" id="c-${id}" ${state[id].checked?"checked":""}> Vu
-          </label>
-          <label class="chip">
-            <input type="checkbox" id="o-${id}" ${state[id].order?"checked":""}> À commander
-          </label>
-        </div>
-      `;
+  // --- Gestion de l'état / sauvegarde ---
 
-      // events
-      item.querySelector(`#q-${id}`).addEventListener("input", e=>{
-        state[id].qty=e.target.value;
-        save();
-        updateCount();
+  const STORAGE_KEY = "pb_inventory_v3";
+
+  function slug(text) {
+    return text
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-");
+  }
+
+  function initialState() {
+    const s = {};
+    Object.entries(DATA).forEach(([cat, items]) => {
+      items.forEach(name => {
+        const id = slug(cat + "-" + name);
+        s[id] = { qty: "", checked: false, order: false, name, cat };
+      });
+    });
+    return s;
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return initialState();
+      const saved = JSON.parse(raw);
+      const base = initialState();
+      // merge pour garder nouveaux items
+      Object.keys(base).forEach(id => {
+        if (!saved[id]) saved[id] = base[id];
+      });
+      return saved;
+    } catch (e) {
+      return initialState();
+    }
+  }
+
+  let state = loadState();
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  // --- Rendu ---
+
+  const categoriesEl = document.getElementById("categories");
+  const countEl = document.getElementById("count");
+  const modal = document.getElementById("modal");
+  const modalBody = document.getElementById("modalBody");
+
+  function renderCategories() {
+    categoriesEl.innerHTML = "";
+    Object.entries(DATA).forEach(([cat, items]) => {
+      const catDiv = document.createElement("div");
+      catDiv.className = "category";
+      const title = document.createElement("div");
+      title.className = "category-title";
+      title.textContent = cat;
+      catDiv.appendChild(title);
+
+      items.forEach(name => {
+        const id = slug(cat + "-" + name);
+        if (!state[id]) state[id] = { qty: "", checked: false, order: false, name, cat };
+        const itemData = state[id];
+
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+
+        const row1 = document.createElement("div");
+        row1.className = "item-row";
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "item-name";
+        nameEl.textContent = name;
+
+        const qtyInput = document.createElement("input");
+        qtyInput.type = "number";
+        qtyInput.min = "0";
+        qtyInput.placeholder = "Qté";
+        qtyInput.value = itemData.qty || "";
+        qtyInput.addEventListener("input", e => {
+          state[id].qty = e.target.value;
+          saveState();
+          updateCount();
+        });
+
+        row1.appendChild(nameEl);
+        row1.appendChild(qtyInput);
+
+        const row2 = document.createElement("div");
+        row2.className = "item-row";
+
+        const chipSeen = document.createElement("label");
+        chipSeen.className = "chip";
+        const seenCheckbox = document.createElement("input");
+        seenCheckbox.type = "checkbox";
+        seenCheckbox.checked = itemData.checked;
+        seenCheckbox.addEventListener("change", e => {
+          state[id].checked = e.target.checked;
+          saveState();
+        });
+        const seenText = document.createElement("span");
+        seenText.textContent = "Vu";
+        chipSeen.appendChild(seenCheckbox);
+        chipSeen.appendChild(seenText);
+
+        const chipOrder = document.createElement("label");
+        chipOrder.className = "chip";
+        const orderCheckbox = document.createElement("input");
+        orderCheckbox.type = "checkbox";
+        orderCheckbox.checked = itemData.order;
+        orderCheckbox.addEventListener("change", e => {
+          state[id].order = e.target.checked;
+          saveState();
+          updateCount();
+        });
+        const orderText = document.createElement("span");
+        orderText.textContent = "À commander";
+        chipOrder.appendChild(orderCheckbox);
+        chipOrder.appendChild(orderText);
+
+        row2.appendChild(chipSeen);
+        row2.appendChild(chipOrder);
+
+        itemDiv.appendChild(row1);
+        itemDiv.appendChild(row2);
+        catDiv.appendChild(itemDiv);
       });
 
-      item.querySelector(`#c-${id}`).addEventListener("change", e=>{
-        state[id].checked=e.target.checked;
-        save();
-      });
-
-      item.querySelector(`#o-${id}`).addEventListener("change", e=>{
-        state[id].order=e.target.checked;
-        save();
-        updateCount();
-      });
-
-      catDiv.appendChild(item);
+      categoriesEl.appendChild(catDiv);
     });
 
-    container.appendChild(catDiv);
-  });
-
-  updateCount();
-}
-
-function updateCount(){
-  const count=Object.values(state).filter(i=>i.order).length;
-  document.getElementById("count").textContent=count;
-}
-
-document.getElementById("resetBtn").onclick=()=>{
-  if(confirm("Réinitialiser tout ?")){
-    state={};
-    save();
-    render();
+    updateCount();
   }
-};
 
-document.getElementById("showList").onclick=()=>{
-  const modal=document.getElementById("modal");
-  const body=document.getElementById("modalBody");
-  const items=Object.entries(state).filter(([id,v])=>v.order);
+  function updateCount() {
+    const nb = Object.values(state).filter(i => i.order).length;
+    countEl.textContent = nb.toString();
+  }
 
-  if(items.length===0){
-    body.innerHTML="Aucun article à commander.";
-  } else {
-    body.innerHTML="";
-    items.forEach(([id, v])=>{
-      const row=document.createElement("div");
-      row.className="modal-item";
-      row.innerHTML=`
-        <span>${v.name}</span>
-        <span><b>x ${v.qty || 1}</b></span>
-      `;
-      body.appendChild(row);
+  // --- Construction de la liste texte pour le patron ---
+
+  function buildOrderList() {
+    const selected = Object.values(state).filter(i => i.order);
+    if (selected.length === 0) {
+      return "Aucun article à commander.";
+    }
+
+    // grouper par catégorie
+    const byCat = {};
+    selected.forEach(item => {
+      if (!byCat[item.cat]) byCat[item.cat] = [];
+      byCat[item.cat].push(item);
     });
+
+    let lines = [];
+    lines.push("Liste à commander – Pause Burger");
+    lines.push("");
+
+    Object.entries(byCat).forEach(([cat, items]) => {
+      lines.push("[" + cat + "]");
+      items.forEach(it => {
+        const q = it.qty && it.qty !== "" ? it.qty : "1";
+        lines.push("- " + it.name + " x " + q);
+      });
+      lines.push("");
+    });
+
+    return lines.join("\n");
   }
 
-  modal.classList.add("open");
-};
+  // --- Events ---
 
-document.getElementById("closeModal").onclick=()=>{
-  document.getElementById("modal").classList.remove("open");
-};
-
-document.getElementById("shareBtn").onclick=async()=>{
-  const items=Object.values(state).filter(i=>i.order);
-  let text="Liste à commander :\n\n";
-  items.forEach(i=>{
-    text+=`- ${i.name} x ${i.qty||1}\n`;
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (!confirm("Tout réinitialiser (quantités + cases) ?")) return;
+    state = initialState();
+    saveState();
+    renderCategories();
   });
 
-  if(navigator.share){
-    await navigator.share({text});
-  } else {
-    await navigator.clipboard.writeText(text);
-    alert("Liste copiée !");
-  }
-};
+  document.getElementById("showList").addEventListener("click", () => {
+    const txt = buildOrderList();
+    modalBody.textContent = txt;
+    modal.classList.add("open");
+  });
 
-render();
+  document.getElementById("closeModal").addEventListener("click", () => {
+    modal.classList.remove("open");
+  });
+
+  modal.addEventListener("click", e => {
+    if (e.target === modal) {
+      modal.classList.remove("open");
+    }
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    const txt = buildOrderList();
+    try {
+      await navigator.clipboard.writeText(txt);
+      alert("Liste copiée dans le presse-papiers ✅");
+    } catch (e) {
+      alert("Impossible de copier automatiquement. Tu peux sélectionner le texte et le copier manuellement.");
+    }
+  });
+
+  document.getElementById("shareBtn").addEventListener("click", async () => {
+    const txt = buildOrderList();
+    const title = "Liste à commander – Pause Burger";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text: txt });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(txt);
+        alert("Liste copiée, tu peux la coller dans WhatsApp / SMS ✅");
+      } else {
+        alert(txt);
+      }
+    } catch (e) {
+      // partage annulé, on ne fait rien
+    }
+  });
+
+  // --- Init ---
+
+  renderCategories();
 </script>
 </body>
 </html>
