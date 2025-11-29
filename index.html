@@ -16,10 +16,6 @@
       --border: #dddddd;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
@@ -42,28 +38,12 @@
 
     header img {
       height: 45px;
-      width: auto;
       border-radius: 6px;
       object-fit: contain;
     }
 
-    .title-block {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .title {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    .subtitle {
-      font-size: 12px;
-      color: #cccccc;
-    }
+    .title { font-size: 18px; font-weight: 700; }
+    .subtitle { font-size: 12px; color: #ccc; }
 
     main {
       padding: 12px;
@@ -72,12 +52,7 @@
       margin: 0 auto;
     }
 
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
+    .toolbar { display: flex; gap: 10px; margin-bottom: 12px; }
 
     .btn {
       border: none;
@@ -90,21 +65,17 @@
     }
 
     .btn-secondary {
-      background: #ffffff;
+      background: #fff;
       border: 1px solid var(--border);
       color: var(--text);
     }
 
-    .category {
-      margin-bottom: 18px;
-    }
-
+    .category { margin-bottom: 18px; }
     .category-title {
       font-size: 16px;
       font-weight: 700;
       color: var(--accent);
       margin-bottom: 6px;
-      text-transform: uppercase;
       letter-spacing: .04em;
     }
 
@@ -124,11 +95,7 @@
       flex-wrap: wrap;
     }
 
-    .item-name {
-      font-size: 15px;
-      font-weight: 600;
-      flex: 1;
-    }
+    .item-name { font-size: 15px; font-weight: 600; flex: 1; }
 
     input[type=number] {
       width: 70px;
@@ -155,24 +122,12 @@
       bottom: 0;
       left: 0;
       right: 0;
-      max-width: 900px;
-      margin: 0 auto;
       padding: 12px;
       background: #111;
       color: white;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-    }
-
-    .footer .count {
-      font-size: 14px;
-    }
-
-    .footer .hint {
-      font-size: 11px;
-      color: #cccccc;
     }
 
     .btn-white {
@@ -195,10 +150,6 @@
       z-index: 100;
     }
 
-    .modal.open {
-      display: flex;
-    }
-
     .modal-box {
       background: white;
       border-radius: 10px;
@@ -210,41 +161,15 @@
       flex-direction: column;
     }
 
-    .modal-header {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-body {
-      padding: 12px;
-      overflow-y: auto;
-      font-size: 14px;
-      white-space: pre-wrap;
-    }
-
-    .modal-footer {
-      padding: 8px 12px 10px;
-      border-top: 1px solid #ddd;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .modal-footer .btn {
-      font-size: 12px;
-      padding: 6px 10px;
-    }
+    .modal-body { padding: 12px; overflow-y: auto; white-space: pre-wrap; }
   </style>
 </head>
 
 <body>
+
 <header>
-  <!-- le logo doit s'appeler IMG_0100.jpeg dans le dépôt -->
-  <img src="IMG_0100.jpeg" alt="Logo Pause Burger">
-  <div class="title-block">
+  <img src="IMG_0100.jpeg" alt="Logo">
+  <div>
     <div class="title">Pause Burger</div>
     <div class="subtitle">Inventaire · Soir</div>
   </div>
@@ -261,390 +186,291 @@
 
 <div class="footer">
   <div>
-    <div class="count"><span id="count">0</span> articles à commander</div>
-    <div class="hint">Coche “À commander” et mets la quantité.</div>
+    <div><span id="count">0</span> articles à commander</div>
   </div>
   <button class="btn-white" id="shareBtn">Partager</button>
 </div>
 
 <div class="modal" id="modal">
   <div class="modal-box">
-    <div class="modal-header">
+    <div style="padding:10px;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;">
       <b>Liste à commander</b>
       <button class="btn btn-secondary" id="closeModal">Fermer</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer">
+    <div style="padding:10px;border-top:1px solid #ddd;display:flex;justify-content:flex-end;">
       <button class="btn btn-secondary" id="copyBtn">Copier</button>
     </div>
   </div>
 </div>
 
 <script>
-  // --- Données inventaire (liste finale validée) ---
+const DATA = {
 
-  const DATA = {
-    "Frites": [
-      "Frites"
-    ],
+  "Frites": ["Frites"],
 
-    "Crudités": [
-      "Salade",
-      "Tomate",
-      "Oignon",
-      "Cornichon"
-    ],
+  "Crudités": ["Salade","Tomate","Oignon","Cornichon"],
 
-    "Viandes": [
-      "Steak 90g",
-      "Steak 45g",
-      "CB",
-      "Kebab",
-      "Nuggets",
-      "Fricadelle",
-      "Mexicain",
-      "Poulet",
-      "Fish",
-      "Merguez",
-      "Chorizo",
-      "Lardons",
-      "Rösti",
-      "Wings",
-      "Wings épicé"
-    ],
+  "Viandes": [
+    "Steak 90g","Steak 45g","CB",
+    "Kebab","Nuggets","Fricadelle",
+    "Mexicain","Poulet","Fish",
+    "Merguez","Chorizo","Lardons",
+    "Rösti","Wings","Wings épicé"
+  ],
 
-    "Fromages / Suppléments": [
-      "Cheddar",
-      "Raclette",
-      "Chèvre",
-      "Oignons frits",
-      "Mozzarella",
-      "Boursin",
-      "Bacon",
-      "Œuf",
-      "Miel"
-    ],
+  "Fromages / Suppléments": [
+    "Cheddar","Raclette","Chèvre",
+    "Oignons frits","Mozzarella",
+    "Boursin","Bacon","Œuf","Miel"
+  ],
 
-    "Sauce cheddar / fromagère": [
-      "Sauce cheddar",
-      "Sauce fromagère"
-    ],
+  "Sauce cheddar / fromagère": [
+    "Sauce cheddar","Sauce fromagère"
+  ],
 
-    "Sauces (groupe 1)": [
-      "Mayonnaise",
-      "Biggy",
-      "Giant",
-      "Algérienne",
-      "Ketchup",
-      "Samouraï",
-      "Barbecue"
-    ],
+  "Sauces (groupe 1)": [
+    "Mayonnaise","Biggy","Giant",
+    "Algérienne","Ketchup",
+    "Samouraï","Barbecue"
+  ],
 
-    "Sauces (groupe 2 / autres)": [
-      "Andalouse",
-      "Poivre",
-      "Pita",
-      "Oignons poivrons",
-      "Américain",
-      "Tasty",
-      "Smoky",
-      "Curry",
-      "Fish",
-      "Cheezy",
-      "Brazil",
-      "Chili Thaï",
-      "Mammouth",
-      "Harissa"
-    ],
+  "Sauces (groupe 2 / autres)": [
+    "Andalouse","Poivre","Pita",
+    "Oignons poivrons","Américain",
+    "Tasty","Smoky","Curry",
+    "Fish","Cheezy","Brazil",
+    "Chili Thaï","Mammouth","Harissa"
+  ],
 
-    "Galettes": [
-      "Galette tacos grande",
-      "Galette tacos petite"
-    ],
+  "Galettes": [
+    "Galette tacos grande",
+    "Galette tacos petite"
+  ],
 
-    "Emballages": [
-      "Emballage wrap",
-      "Emballage tacos",
-      "Emballage grand burger",
-      "Emballage petit burger",
-      "Boîte tenders x3",
-      "Boîte tenders x7",
-      "Boîte tenders x14",
-      "Boîte tenders x20"
-    ],
+  "Emballages": [
+    "Emballage wrap",
+    "Emballage tacos",
+    "Emballage grand burger",
+    "Emballage petit burger",
+    "Boîte tenders x3",
+    "Boîte tenders x7",
+    "Boîte tenders x14",
+    "Boîte tenders x20",
+    "Grande boîte frites cheddar",
+    "Petite boîte frites cheddar",
+    "Petit sac frites",
+    "Grand sac frites",
+    "Pot de sauce"
+  ],
 
-    "Pains": [
-      "Pain sésame",
-      "Pain brioché",
-      "Pain toast",
-      "Petit pain",
-      "Pain noir",
-      "Pain peluche",
-      "Pain rouge"
-    ],
+  "Pains": [
+    "Pain sésame","Pain brioché","Pain toast",
+    "Petit pain","Pain noir","Pain peluche",
+    "Pain rouge"
+  ],
 
-    "Épices": [
-      "Farine",
-      "Épices tenders",
-      "Épice jaune",
-      "Sel",
-      "Poivre"
-    ],
+  "Épices": [
+    "Farine","Épices tenders","Épice jaune",
+    "Sel","Poivre"
+  ],
 
-    "Papier / Consommable": [
-      "Papier cuisson",
-      "Aluminium",
-      "Sac de congélation"
-    ],
+  "Papier / Consommable": [
+    "Papier cuisson","Aluminium","Sac de congélation"
+  ],
 
-    "Huile": [
-      "Huile"
-    ],
+  "Huile": ["Huile"],
 
-    "Vinaigre": [
-      "Vinaigre"
-    ],
+  "Vinaigre": ["Vinaigre"],
 
-    "Produits ménagers": [
-      "Essuie-tout",
-      "Lave-sol",
-      "Eau javel",
-      "Dégraissant",
-      "Serpillière",
-      "Éponge inox",
-      "Gants",
-      "Sac poubelle",
-      "Lave mains"
-    ]
-  };
+  "Produits ménagers": [
+    "Essuie-tout","Lave-sol","Eau javel","Dégraissant",
+    "Serpillière","Éponge inox","Gants",
+    "Sac poubelle","Lave mains"
+  ]
+};
 
-  // --- Gestion de l'état / sauvegarde ---
 
-  const STORAGE_KEY = "pb_inventory_v3";
+const STORAGE_KEY="pb_inventory_v4";
 
-  function slug(text) {
-    return text
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-");
-  }
+function slug(t){
+  return t.toLowerCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+          .replace(/[^a-z0-9]+/g,"-");
+}
 
-  function initialState() {
-    const s = {};
-    Object.entries(DATA).forEach(([cat, items]) => {
-      items.forEach(name => {
-        const id = slug(cat + "-" + name);
-        s[id] = { qty: "", checked: false, order: false, name, cat };
-      });
+function initialState(){
+  const s={};
+  Object.entries(DATA).forEach(([cat,items])=>{
+    items.forEach(name=>{
+      const id=slug(cat+"-"+name);
+      s[id]={name,cat,qty:"",checked:false,order:false};
+    });
+  });
+  return s;
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return initialState();
+    const s=JSON.parse(raw);
+    const base=initialState();
+    Object.keys(base).forEach(id=>{
+      if(!s[id]) s[id]=base[id];
     });
     return s;
+  }catch(e){
+    return initialState();
   }
+}
 
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return initialState();
-      const saved = JSON.parse(raw);
-      const base = initialState();
-      // merge pour garder nouveaux items
-      Object.keys(base).forEach(id => {
-        if (!saved[id]) saved[id] = base[id];
+let state=loadState();
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+}
+
+const categoriesEl=document.getElementById("categories");
+const countEl=document.getElementById("count");
+
+function renderCategories(){
+  categoriesEl.innerHTML="";
+  Object.entries(DATA).forEach(([cat,items])=>{
+    const block=document.createElement("div");
+    block.className="category";
+
+    const title=document.createElement("div");
+    title.className="category-title";
+    title.textContent=cat;
+
+    block.appendChild(title);
+
+    items.forEach(name=>{
+      const id=slug(cat+"-"+name);
+      const d=state[id];
+
+      const card=document.createElement("div");
+      card.className="item";
+
+      const row1=document.createElement("div");
+      row1.className="item-row";
+
+      const nameEl=document.createElement("div");
+      nameEl.className="item-name";
+      nameEl.textContent=name;
+
+      const qty=document.createElement("input");
+      qty.type="number";
+      qty.placeholder="Qté";
+      qty.value=d.qty||"";
+      qty.addEventListener("input",e=>{
+        d.qty=e.target.value;
+        saveState();
+        updateCount();
       });
-      return saved;
-    } catch (e) {
-      return initialState();
-    }
-  }
 
-  let state = loadState();
+      row1.appendChild(nameEl);
+      row1.appendChild(qty);
 
-  function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
+      const row2=document.createElement("div");
+      row2.className="item-row";
 
-  // --- Rendu ---
-
-  const categoriesEl = document.getElementById("categories");
-  const countEl = document.getElementById("count");
-  const modal = document.getElementById("modal");
-  const modalBody = document.getElementById("modalBody");
-
-  function renderCategories() {
-    categoriesEl.innerHTML = "";
-    Object.entries(DATA).forEach(([cat, items]) => {
-      const catDiv = document.createElement("div");
-      catDiv.className = "category";
-      const title = document.createElement("div");
-      title.className = "category-title";
-      title.textContent = cat;
-      catDiv.appendChild(title);
-
-      items.forEach(name => {
-        const id = slug(cat + "-" + name);
-        if (!state[id]) state[id] = { qty: "", checked: false, order: false, name, cat };
-        const itemData = state[id];
-
-        const itemDiv = document.createElement("div");
-        itemDiv.className = "item";
-
-        const row1 = document.createElement("div");
-        row1.className = "item-row";
-
-        const nameEl = document.createElement("div");
-        nameEl.className = "item-name";
-        nameEl.textContent = name;
-
-        const qtyInput = document.createElement("input");
-        qtyInput.type = "number";
-        qtyInput.min = "0";
-        qtyInput.placeholder = "Qté";
-        qtyInput.value = itemData.qty || "";
-        qtyInput.addEventListener("input", e => {
-          state[id].qty = e.target.value;
+      function chip(label,key){
+        const c=document.createElement("label");
+        c.className="chip";
+        const box=document.createElement("input");
+        box.type="checkbox";
+        box.checked=d[key];
+        box.addEventListener("change",e=>{
+          d[key]=e.target.checked;
           saveState();
           updateCount();
         });
-
-        row1.appendChild(nameEl);
-        row1.appendChild(qtyInput);
-
-        const row2 = document.createElement("div");
-        row2.className = "item-row";
-
-        const chipSeen = document.createElement("label");
-        chipSeen.className = "chip";
-        const seenCheckbox = document.createElement("input");
-        seenCheckbox.type = "checkbox";
-        seenCheckbox.checked = itemData.checked;
-        seenCheckbox.addEventListener("change", e => {
-          state[id].checked = e.target.checked;
-          saveState();
-        });
-        const seenText = document.createElement("span");
-        seenText.textContent = "Vu";
-        chipSeen.appendChild(seenCheckbox);
-        chipSeen.appendChild(seenText);
-
-        const chipOrder = document.createElement("label");
-        chipOrder.className = "chip";
-        const orderCheckbox = document.createElement("input");
-        orderCheckbox.type = "checkbox";
-        orderCheckbox.checked = itemData.order;
-        orderCheckbox.addEventListener("change", e => {
-          state[id].order = e.target.checked;
-          saveState();
-          updateCount();
-        });
-        const orderText = document.createElement("span");
-        orderText.textContent = "À commander";
-        chipOrder.appendChild(orderCheckbox);
-        chipOrder.appendChild(orderText);
-
-        row2.appendChild(chipSeen);
-        row2.appendChild(chipOrder);
-
-        itemDiv.appendChild(row1);
-        itemDiv.appendChild(row2);
-        catDiv.appendChild(itemDiv);
-      });
-
-      categoriesEl.appendChild(catDiv);
-    });
-
-    updateCount();
-  }
-
-  function updateCount() {
-    const nb = Object.values(state).filter(i => i.order).length;
-    countEl.textContent = nb.toString();
-  }
-
-  // --- Construction de la liste texte pour le patron ---
-
-  function buildOrderList() {
-    const selected = Object.values(state).filter(i => i.order);
-    if (selected.length === 0) {
-      return "Aucun article à commander.";
-    }
-
-    // grouper par catégorie
-    const byCat = {};
-    selected.forEach(item => {
-      if (!byCat[item.cat]) byCat[item.cat] = [];
-      byCat[item.cat].push(item);
-    });
-
-    let lines = [];
-    lines.push("Liste à commander – Pause Burger");
-    lines.push("");
-
-    Object.entries(byCat).forEach(([cat, items]) => {
-      lines.push("[" + cat + "]");
-      items.forEach(it => {
-        const q = it.qty && it.qty !== "" ? it.qty : "1";
-        lines.push("- " + it.name + " x " + q);
-      });
-      lines.push("");
-    });
-
-    return lines.join("\n");
-  }
-
-  // --- Events ---
-
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    if (!confirm("Tout réinitialiser (quantités + cases) ?")) return;
-    state = initialState();
-    saveState();
-    renderCategories();
-  });
-
-  document.getElementById("showList").addEventListener("click", () => {
-    const txt = buildOrderList();
-    modalBody.textContent = txt;
-    modal.classList.add("open");
-  });
-
-  document.getElementById("closeModal").addEventListener("click", () => {
-    modal.classList.remove("open");
-  });
-
-  modal.addEventListener("click", e => {
-    if (e.target === modal) {
-      modal.classList.remove("open");
-    }
-  });
-
-  document.getElementById("copyBtn").addEventListener("click", async () => {
-    const txt = buildOrderList();
-    try {
-      await navigator.clipboard.writeText(txt);
-      alert("Liste copiée dans le presse-papiers ✅");
-    } catch (e) {
-      alert("Impossible de copier automatiquement. Tu peux sélectionner le texte et le copier manuellement.");
-    }
-  });
-
-  document.getElementById("shareBtn").addEventListener("click", async () => {
-    const txt = buildOrderList();
-    const title = "Liste à commander – Pause Burger";
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, text: txt });
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(txt);
-        alert("Liste copiée, tu peux la coller dans WhatsApp / SMS ✅");
-      } else {
-        alert(txt);
+        const t=document.createElement("span");
+        t.textContent=label;
+        c.appendChild(box);
+        c.appendChild(t);
+        return c;
       }
-    } catch (e) {
-      // partage annulé, on ne fait rien
-    }
+
+      row2.appendChild(chip("Vu","checked"));
+      row2.appendChild(chip("À commander","order"));
+
+      card.appendChild(row1);
+      card.appendChild(row2);
+      block.appendChild(card);
+    });
+
+    categoriesEl.appendChild(block);
   });
 
-  // --- Init ---
+  updateCount();
+}
 
+function updateCount(){
+  const n=Object.values(state).filter(i=>i.order).length;
+  countEl.textContent=n;
+}
+
+function buildList(){
+  const selected=Object.values(state).filter(i=>i.order);
+  if(selected.length===0) return "Aucun article à commander.";
+
+  const byCat={};
+  selected.forEach(it=>{
+    if(!byCat[it.cat]) byCat[it.cat]=[];
+    byCat[it.cat].push(it);
+  });
+
+  let txt="Liste à commander – Pause Burger\n\n";
+  Object.entries(byCat).forEach(([cat,items])=>{
+    txt+=`[${cat}]\n`;
+    items.forEach(it=>{
+      const q=it.qty&&it.qty!==""?it.qty:"1";
+      txt+=`- ${it.name} x ${q}\n`;
+    });
+    txt+="\n";
+  });
+
+  return txt;
+}
+
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Tout réinitialiser ?")) return;
+  state=initialState();
+  saveState();
   renderCategories();
+});
+
+document.getElementById("showList").addEventListener("click",()=>{
+  const modal=document.getElementById("modal");
+  const body=document.getElementById("modalBody");
+  body.textContent=buildList();
+  modal.style.display="flex";
+});
+
+document.getElementById("closeModal").addEventListener("click",()=>{
+  document.getElementById("modal").style.display="none";
+});
+
+document.getElementById("copyBtn").addEventListener("click",async()=>{
+  await navigator.clipboard.writeText(buildList());
+  alert("Copié !");
+});
+
+document.getElementById("shareBtn").addEventListener("click",async()=>{
+  const txt=buildList();
+  if(navigator.share){
+    try{ await navigator.share({title:"Liste",text:txt}); }catch(e){}
+  }else{
+    await navigator.clipboard.writeText(txt);
+    alert("Liste copiée !");
+  }
+});
+
+renderCategories();
 </script>
+
 </body>
 </html>
